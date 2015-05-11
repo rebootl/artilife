@@ -134,6 +134,11 @@ class Circle:
                             ('c3B', self.verts_colors))
 
 
+class Arc:
+    # .. todo..
+    pass
+
+
 class Disk:
 
     def __init__(self, center=(0, 0), radius=100, color=(180, 180, 120), segments=20):
@@ -196,6 +201,11 @@ class Disk:
                             self.verts_index,
                             ('v2i', self.verts),
                             ('c3B', self.verts_colors))
+
+
+class DiskArc:
+    # .. todo..
+    pass
 
 
 class Ring:
@@ -268,6 +278,11 @@ class Ring:
         verts_index += [ segments*2-1, 0, segments ]
 
         self.verts_index = verts_index
+
+
+class RingArc:
+    # .. todo..
+    pass
 
 
 class Rect:
