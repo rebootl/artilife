@@ -32,11 +32,17 @@ class Figure:
 
         self.ring = Ring((-20, 150))
 
-        self.figure = Group((450, 200), 10)
+        self.arc = Arc((-200, 0), radius=130)
+
+        self.diskarc = DiskArc((-180, 0), radius=80)
+
+        self.figure = Group((450, 200), 0)
         self.figure.shapes.append(self.line)
         self.figure.shapes.append(self.disk)
         self.figure.shapes.append(self.rect)
         self.figure.shapes.append(self.ring)
+        self.figure.shapes.append(self.arc)
+        self.figure.shapes.append(self.diskarc)
 
 
 @window.event
@@ -44,11 +50,11 @@ def on_draw():
     window.clear()
 
     # draw single elements
-    for pix in pixel_list:
-        pix.draw()
+    #for pix in pixel_list:
+    #    pix.draw()
 
-    fig.line.draw()
-    fig.circle.draw()
+    #fig.line.draw()
+    #fig.circle.draw()
 
     # render the figure
     fig.figure.render()
