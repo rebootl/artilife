@@ -11,6 +11,8 @@ from pyglet_draw_elements import *
 
 window = pyglet.window.Window()
 
+fps_display = pyglet.clock.ClockDisplay()
+
 def deg2rad(a_deg):
     return math.pi/180 * a_deg
 
@@ -35,7 +37,7 @@ class Figure:
 #        self.figure.shapes.append(self.ring)
 #        self.figure.shapes.append(self.diskarc)
 
-        self.fig1 = Group((20, 20), 10)
+        self.fig1 = Group((20, 20), 0)
 
         self.circle = Circle((120, 300))
         self.arc = Arc((300, 300))
@@ -56,6 +58,8 @@ class Figure:
 
         self.sring = StrokeRing((230, 130))
 
+        self.ringarc = StrokeRingArc((400, 80))
+
         self.fig1.shapes.append(self.circle)
         self.fig1.shapes.append(self.arc)
         self.fig1.shapes.append(self.disk)
@@ -64,6 +68,7 @@ class Figure:
         self.fig1.shapes.append(self.lrect)
         self.fig1.shapes.append(self.ring)
         self.fig1.shapes.append(self.sring)
+        self.fig1.shapes.append(self.ringarc)
 
 
 @window.event
@@ -80,6 +85,8 @@ def on_draw():
     # render the figure
     fig.figure.render()
     fig.fig1.render()
+
+    fps_display.draw()
 
 # create single elements
 pixel_list = []

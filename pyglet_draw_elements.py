@@ -282,8 +282,8 @@ class RingBase:
     def create_index(self):
 
         segments = self.segments
-        r_out = self.r_out
-        r_in = self.r_in
+        #r_out = self.r_out
+        #r_in = self.r_in
 
         verts_index = []
         # (leave last segment open)
@@ -320,10 +320,64 @@ class StrokeRing(RingBase):
         RingBase.__init__(self, center, r_out, r_in, color, segments)
 
 
-class RingArc:
-    # .. todo..
-    pass
+class RingArcBase:
 
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+
+        self.center = center
+        self.radius_outer = radius_outer
+        self.radius_inner = radius_inner
+
+        self.alpha_1 = alpha_1
+        self.alpha_2 = alpha_2
+
+        self.segments = segments
+
+        self.n_verts = segments * 2 + 2
+        print("n_verts: ", self.n_verts)
+
+        self.verts = create_arc_verts(center, radius_outer, alpha_1, alpha_2, segments)
+        self.verts += create_arc_verts(center, radius_inner, alpha_1, alpha_2, segments)
+
+        self.create_index()
+
+        self.color = color
+        self.verts_colors = color * self.n_verts
+
+        self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
+        self.indexed = True
+
+    def create_index(self):
+
+        segments = self.segments
+
+        verts_i = []
+        for n in range(segments):
+
+            verts_i += [ segments+n+1, n, n+1 ]
+            verts_i += [ segments+n+1, n+1, segments+n+2 ]
+
+        self.verts_index = verts_i
+
+
+class RingArc(RingArcBase):
+
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+
+        RingArcBase.__init__(self, center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
+
+
+class StrokeRingArc(RingArcBase):
+
+    def __init__(self, center=(0, 0), radius=100, width=15, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+
+        radius_outer = radius + width/2
+        radius_inner = radius - width/2
+
+        RingArcBase.__init__(self, center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
+
+
+### element group
 
 class Group:
 
