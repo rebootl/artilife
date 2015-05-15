@@ -11,6 +11,12 @@ from pyglet_draw_elements import *
 
 window = pyglet.window.Window()
 
+def deg2rad(a_deg):
+    return math.pi/180 * a_deg
+
+def rad2deg(a_rad):
+    return 180/math.pi * a_rad
+
 
 class Figure:
 
@@ -18,31 +24,46 @@ class Figure:
 
         self.line = Line()
 
-        self.circle = Circle()
+        self.rect = Rect((50,-100))
+        # (modify some properies)
+        self.rect.verts_colors = (255, 255, 100) * 2 + (100, 255, 100) * 2
 
-        self.disk = Disk()
+
+        self.figure = Group((450, 200), 0)
+        self.figure.shapes.append(self.line)
+        self.figure.shapes.append(self.rect)
+#        self.figure.shapes.append(self.ring)
+#        self.figure.shapes.append(self.diskarc)
+
+        self.fig1 = Group((20, 20), 10)
+
+        self.circle = Circle((120, 300))
+        self.arc = Arc((300, 300))
+
+        self.disk = Disk((500, 300))
         # (modify some properties)
         self.disk.verts_colors[0] = 5
         self.disk.verts_colors[1] = 5
         self.disk.verts_colors[2] = 5
 
-        self.rect = Rect((50,-100), filled=True)
-        # (modify some properies)
-        self.rect.verts_colors = (255, 255, 100) * 2 + (100, 255, 100) * 2
+        self.diskarc = DiskArc((240, 300), radius=80)
 
-        self.ring = Ring((-20, 150))
+        self.sline = StrokeLine()
 
-        self.arc = Arc((-200, 0), radius=130)
+        self.lrect = LineRect((175, 25))
 
-        self.diskarc = DiskArc((-180, 0), radius=80)
+        self.ring = Ring((200, 150))
 
-        self.figure = Group((450, 200), 0)
-        self.figure.shapes.append(self.line)
-        self.figure.shapes.append(self.disk)
-        self.figure.shapes.append(self.rect)
-        self.figure.shapes.append(self.ring)
-        self.figure.shapes.append(self.arc)
-        self.figure.shapes.append(self.diskarc)
+        self.sring = StrokeRing((230, 130))
+
+        self.fig1.shapes.append(self.circle)
+        self.fig1.shapes.append(self.arc)
+        self.fig1.shapes.append(self.disk)
+        self.fig1.shapes.append(self.diskarc)
+        self.fig1.shapes.append(self.sline)
+        self.fig1.shapes.append(self.lrect)
+        self.fig1.shapes.append(self.ring)
+        self.fig1.shapes.append(self.sring)
 
 
 @window.event
@@ -58,6 +79,7 @@ def on_draw():
 
     # render the figure
     fig.figure.render()
+    fig.fig1.render()
 
 # create single elements
 pixel_list = []

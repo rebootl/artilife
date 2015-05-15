@@ -29,6 +29,8 @@
 import pyglet
 import math
 
+### point elements
+
 class Pixel:
 
     def __init__(self, pos=(10, 10), color=(255, 255, 255)):
@@ -44,13 +46,7 @@ class Pixel:
         self.gl_prim_mode = pyglet.gl.GL_POINTS
         self.indexed = False
 
-    # deprecated
-    #def draw(self):
-    #
-    #    pyglet.graphics.draw(1, pyglet.gl.GL_POINTS,
-    #                        ('v2i', (self.x, self.y)),
-    #                        ('c3B', self.color))
-
+### line elements
 
 class Line:
 
@@ -67,15 +63,6 @@ class Line:
 
         self.gl_prim_mode = pyglet.gl.GL_LINES
         self.indexed = False
-
-    # deprecated
-    #def draw(self):
-    #
-    #    pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-    #                        ('v2i', self.verts),
-    #                        ('c3B', self.verts_colors))
-
-
 
 
 class MultiLine:
@@ -96,17 +83,36 @@ class MultiLine:
         self.indexed = False
 
 
+class LineRect:
+
+    def __init__(self, center=(0,0), size=(200, 100), color=(0, 255, 0)):
+
+        self.center = center
+        self.size = size
+        self.width = size[0]
+        self.height = size[1]
+
+        self.n_verts = 4
+        self.verts = create_rect_verts(center, size)
+
+        self.color = color
+        self.verts_colors = color * 4
+
+        self.gl_prim_mode = pyglet.gl.GL_LINE_LOOP
+        self.indexed = False
+
+
 class Circle:
 
-    def __init__(self, center=(300, 300), radius=100, color=(0, 0, 255), segments=20):
+    def __init__(self, center=(0, 0), radius=100, color=(0, 0, 255), segments=20):
         self.center = center
         self.radius = radius
 
         self.segments = segments
 
         self.n_verts = segments
-        self.create_mesh()
-#        self.verts = self.create_mesh(center, radius, segments)
+
+        self.verts = create_circle_verts(center, radius, segments)
 
         self.color = color
         self.verts_colors = color * self.n_verts
@@ -114,35 +120,10 @@ class Circle:
         self.gl_prim_mode = pyglet.gl.GL_LINE_LOOP
         self.indexed = False
 
-    def create_mesh(self):
-
-        center = self.center
-        r = self.radius
-        segments = self.segments
-
-        segment_angle = 2 * math.pi / segments
-
-        verts = []
-        for n in range(segments):
-
-            alpha = n * segment_angle
-
-            verts.append( center[0] + round(r*math.cos(alpha)) )
-            verts.append( center[1] + round(r*math.sin(alpha)) )
-
-        self.verts = verts
-
-    # deprecated
-    #def draw(self):
-    #
-    #    pyglet.graphics.draw(self.segments, pyglet.gl.GL_LINE_LOOP,
-    #                        ('v2i', self.verts),
-    #                        ('c3B', self.verts_colors))
-
 
 class Arc:
 
-    def __init__(self, center=(300, 300), radius=100, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+    def __init__(self, center=(0, 0), radius=100, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
 
         self.center = center
         self.radius = radius
@@ -153,34 +134,69 @@ class Arc:
         self.segments = segments
 
         self.n_verts = segments+1
-        self.create_mesh()
-
+        self.verts = create_arc_verts(center, radius, alpha_1, alpha_2, segments)
         self.color = color
         self.verts_colors = color * self.n_verts
 
         self.gl_prim_mode = pyglet.gl.GL_LINE_STRIP
         self.indexed = False
 
-    def create_mesh(self):
+### surface elements
 
-        center = self.center
-        r = self.radius
-        alpha_1 = self.alpha_1
-        alpha_2 = self.alpha_2
+class StrokeLine:
 
-        segments = self.segments
+    def __init__(self, start=(0,0), end=(80, 60), width=8, color=(130,130,150)):
 
-        segment_angle = (alpha_2-alpha_1) / segments
+        self.start = start
+        self.end = end
+        self.width = width
 
-        verts = []
-        for n in range(segments+1):
+        self.n_verts = 4
 
-            alpha = alpha_1 + n * segment_angle
+        self.verts = create_tiltrect_verts(start, end, width)
+        self.verts_index = ( 0, 1, 2, 1, 2, 3 )
 
-            verts.append( center[0] + round(r*math.cos(alpha)) )
-            verts.append( center[1] + round(r*math.sin(alpha)) )
+        self.color = color
+        self.verts_colors = color * 4
 
+        self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
+        self.indexed = True
+
+
+class Rect:
+
+    def __init__(self, center=(0,0), size=(200, 100), color=(255, 0, 0)):
+
+        self.center = center
+        self.size = size
+        self.width = size[0]
+        self.height = size[1]
+
+        self.n_verts = 4
+        self.verts = create_rect_verts(center, size)
+
+        self.color = color
+        self.verts_colors = color * 4
+
+        self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
+        self.indexed = True
+
+        self.verts_index = ( 0, 1, 2, 2, 3, 0 )
+
+
+class Shape:
+
+    def __init__(self, verts, verts_index, color=(255, 255, 255)):
+
+        self.n_verts = len(verts) / 2
         self.verts = verts
+        self.verts_index = verts_index
+
+        self.color = color
+        self.verts_color = color * self.n_verts
+
+        self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
+        self.indexed = True
 
 
 class Disk:
@@ -193,8 +209,13 @@ class Disk:
 
         self.n_verts = segments + 1
 
-        self.create_mesh()
-        self.create_index()
+        # (insert center vertice)
+        self.verts = [ center[0], center[1] ]
+        self.verts.extend(create_circle_verts(center, radius, segments))
+
+        self.verts_index = create_radial_index(segments-1)
+        # (connect last segment to start)
+        self.verts_index += [ 0, segments, 1 ]
 
         self.color = color
         # (use list to allow editing)
@@ -202,50 +223,6 @@ class Disk:
 
         self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
         self.indexed = True
-
-    def create_mesh(self):
-
-        # (make locals for performance)
-        center = self.center
-        r = self.radius
-        segments = self.segments
-
-        segment_angle = 2 * math.pi / segments
-
-        verts = [ center[0], center[1] ]
-        for n in range(segments):
-
-            alpha = n * segment_angle
-
-            verts.append( center[0] + round(r*math.cos(alpha)) )
-            verts.append( center[1] + round(r*math.sin(alpha)) )
-
-        self.verts = verts
-
-    def create_index(self):
-
-        segments = self.segments
-
-        verts_index = []
-        # (leave last segment open)
-        for n in range(segments-1):
-
-            triangle_index = [ 0, n+1, n+2 ]
-            verts_index += triangle_index
-
-        # (connect last segment to start)
-        verts_index += [ 0, segments, 1 ]
-
-        self.verts_index = verts_index
-
-    # deprecated
-    #def draw(self):
-    #
-    #    pyglet.graphics.draw_indexed(self.n_verts,
-    #                        pyglet.gl.GL_TRIANGLES,
-    #                        self.verts_index,
-    #                        ('v2i', self.verts),
-    #                        ('c3B', self.verts_colors))
 
 
 class DiskArc:
@@ -262,8 +239,10 @@ class DiskArc:
 
         self.n_verts = segments + 2
 
-        self.create_mesh()
-        self.create_index()
+        self.verts = [ center[0], center[1] ]
+        self.verts.extend(create_arc_verts(center, radius, alpha_1, alpha_2, segments))
+
+        self.verts_index = create_radial_index(segments)
 
         self.color = color
         # (use list to allow editing)
@@ -272,47 +251,8 @@ class DiskArc:
         self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
         self.indexed = True
 
-    def create_mesh(self):
 
-        # (make locals for performance)
-        center = self.center
-        r = self.radius
-
-        alpha_1 = self.alpha_1
-        alpha_2 = self.alpha_2
-
-        segments = self.segments
-
-        segment_angle = (alpha_2-alpha_1) / segments
-
-        verts = [ center[0], center[1] ]
-        for n in range(segments+1):
-
-            alpha = alpha_1 + n * segment_angle
-
-            verts.append( center[0] + round(r*math.cos(alpha)) )
-            verts.append( center[1] + round(r*math.sin(alpha)) )
-
-        self.verts = verts
-
-    def create_index(self):
-
-        segments = self.segments
-
-        verts_index = []
-        # (leave last segment open)
-        for n in range(segments):
-
-            triangle_index = [ 0, n+1, n+2 ]
-            verts_index += triangle_index
-
-        # (connect last segment to start)
-        #verts_index += [ 0, segments, 1 ]
-
-        self.verts_index = verts_index
-
-
-class Ring:
+class RingBase:
 
     def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90, color=(80, 1180, 150), segments=50):
 
@@ -324,7 +264,10 @@ class Ring:
 
         self.n_verts = segments * 2
 
-        self.create_mesh()
+        # create mesh
+        self.verts = create_circle_verts(center, radius_outer, segments)
+        self.verts += create_circle_verts(center, radius_inner, segments)
+
         self.create_index()
 
         self.color = color
@@ -335,34 +278,6 @@ class Ring:
 
         self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
         self.indexed = True    
-
-    def create_mesh(self):
-
-        # (make locals for performance)
-        center = self.center
-        segments = self.segments
-        r_out = self.r_out
-        r_in = self.r_in
-
-        segment_angle = 2 * math.pi / segments
-
-        verts = []
-        # (using two loops to get a nice vertice order)
-        for n in range(segments):
-
-            alpha = n * segment_angle
-
-            verts.append( center[0] + round(r_out*math.cos(alpha)) )
-            verts.append( center[1] + round(r_out*math.sin(alpha)) )
-
-        for n in range(segments):
-
-            alpha = n * segment_angle
-
-            verts.append( center[0] + round(r_in*math.cos(alpha)) )
-            verts.append( center[1] + round(r_in*math.sin(alpha)) )
-
-        self.verts = verts
 
     def create_index(self):
 
@@ -387,78 +302,32 @@ class Ring:
         self.verts_index = verts_index
 
 
+class Ring(RingBase):
+
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90, color=(80, 180, 150), segments=50):
+
+        # super() could be used here, e.g.: super().__init__(value)
+        RingBase.__init__(self, center, radius_outer, radius_inner, color, segments)
+
+
+class StrokeRing(RingBase):
+
+    def __init__(self, center=(0, 0), radius=120, width=5, color=(200, 180, 160), segments=30):
+
+        r_out = radius + width/2
+        r_in = radius - width/2
+
+        RingBase.__init__(self, center, r_out, r_in, color, segments)
+
+
 class RingArc:
     # .. todo..
     pass
 
 
-class Rect:
-
-    def __init__(self, center=(0,0), size=(200, 100), color=(255, 0, 0), filled=False):
-        self.center = center
-        self.size = size
-        self.width = size[0]
-        self.height = size[1]
-
-        self.n_verts = 4
-        self.create_mesh()
-#        self.verts = self.create_mesh(center, size[0], size[1])
-
-        self.color = color
-        self.verts_colors = color * 4
-
-        if not filled:
-            self.gl_prim_mode = pyglet.gl.GL_LINE_LOOP
-            self.indexed = False
-        else:
-            self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
-            self.indexed = True
-
-            self.verts_index = ( 0, 1, 2, 2, 3, 0 )
-
-    def create_mesh(self):
- 
-        c_x = self.center[0]
-        c_y = self.center[1]
-        width = self.width
-        height = self.height
-
-        self.verts = ( c_x-width/2, c_y-height/2,
-                    c_x+width/2, c_y-height/2,
-                    c_x+width/2, c_y+height/2,
-                    c_x-width/2, c_y+height/2 )
-
-    # alternative: use return in create_mesh and update_mesh --> evtl. test perform.
-    #def update_mesh(self):
-    #    self.verts = self.create_mesh(self.center, self.width, self.height)
-
-
-class LRect:
-    '''Draws a rectangle with the given width, from point 1 to point 2.
-Can therefor be used to draw bold lines ;) .'''
-    # .. todo..
-    pass
-
-class Shape:
-    '''Unicolor shape, build from triangles.
-To use multiple colors easily set <inst>.verts_colors.'''
-
-    def __init__(self, verts, verts_index, color=(255, 255, 255)):
-
-        self.n_verts = len(verts) / 2
-        self.verts = verts
-        self.verts_index = verts_index
-
-        self.color = color
-        self.verts_color = color * self.n_verts
-
-        self.gl_prim_mode = pyglet.gl.GL_TRIANGLES
-        self.indexed = True
-
-
 class Group:
 
-    def __init__(self, position, angle):
+    def __init__(self, position=(0, 0), angle=0):
 
         self.position = position
         self.angle = angle
@@ -488,3 +357,103 @@ class Group:
 #                            ('v2f', shape.verts),
 #                            ('c3B', shape.colors))
         pyglet.gl.glPopMatrix()
+
+
+### helper functions
+
+def create_circle_verts(center, r, segments):
+
+    segment_angle = 2 * math.pi / segments
+
+    verts = []
+    for n in range(segments):
+
+        alpha = n * segment_angle
+
+        verts.append( center[0] + round(r*math.cos(alpha)) )
+        verts.append( center[1] + round(r*math.sin(alpha)) )
+
+    return verts
+
+
+def create_arc_verts(center, r, alpha_1, alpha_2, segments):
+
+    segment_angle = (alpha_2-alpha_1) / segments
+
+    verts = []
+    for n in range(segments+1):
+
+        alpha = alpha_1 + n * segment_angle
+
+        verts.append( center[0] + round(r*math.cos(alpha)) )
+        verts.append( center[1] + round(r*math.sin(alpha)) )
+
+    return verts
+
+
+def create_radial_index(segments):
+
+    verts_index = []
+    # (leaves last segment open)
+    for n in range(segments):
+
+        triangle_index = [ 0, n+1, n+2 ]
+        verts_index += triangle_index
+
+    return verts_index
+
+
+def create_rect_verts(center, size):
+
+        c_x = center[0]
+        c_y = center[1]
+        width = size[0]
+        height = size[1]
+
+        return [ c_x-width/2, c_y-height/2,
+                c_x+width/2, c_y-height/2,
+                c_x+width/2, c_y+height/2,
+                c_x-width/2, c_y+height/2 ]
+
+
+def create_tiltrect_verts(start, end, width):
+
+    Sx = start[0]
+    Sy = start[1]
+
+    Ex = end[0]
+    Ey = end[1]
+
+    x = Ex - Sx
+    y = Ey - Sy
+
+    angle = math.atan2(y, x)
+
+    w_2 = width/2
+
+    px = w_2 * math.sin(angle)
+    py = w_2 * math.cos(angle)
+
+    # (debug-print)
+    #print("px: ", px)
+    #print("py: ", py)    
+
+    v0_x = Sx + px
+    v0_y = Sy - py
+    v1_x = Sx - px
+    v1_y = Sy + py
+
+    v2_x = Ex + px
+    v2_y = Ey - py
+    v3_x = Ex - px
+    v3_y = Ey + py
+
+    verts = [ v0_x, v0_y, v1_x, v1_y, v2_x, v2_y, v3_x, v3_y ]
+
+    # (debug-print)
+    #print("verts: ", verts)
+
+    return verts
+
+# (debug)
+#create_rectangle_verts((0,0), (50,-50), 10)
