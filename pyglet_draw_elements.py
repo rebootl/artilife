@@ -21,7 +21,7 @@
 # (-) not using pyglet's list_array(?) VBO (?), yet...
 #
 # --> change rgb to rgba !
-# --> reorganize the elements
+# --> reorganize the elements ==> OK
 #
 # cem, 2015-05-10
 #
@@ -307,7 +307,7 @@ class Ring(RingBase):
     def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90, color=(80, 180, 150), segments=50):
 
         # super() could be used here, e.g.: super().__init__(value)
-        RingBase.__init__(self, center, radius_outer, radius_inner, color, segments)
+        super().__init__(center, radius_outer, radius_inner, color, segments)
 
 
 class StrokeRing(RingBase):
@@ -317,7 +317,7 @@ class StrokeRing(RingBase):
         r_out = radius + width/2
         r_in = radius - width/2
 
-        RingBase.__init__(self, center, r_out, r_in, color, segments)
+        super().__init__(center, r_out, r_in, color, segments)
 
 
 class RingArcBase:
@@ -334,7 +334,8 @@ class RingArcBase:
         self.segments = segments
 
         self.n_verts = segments * 2 + 2
-        print("n_verts: ", self.n_verts)
+        # (debug-print)
+        #print("n_verts: ", self.n_verts)
 
         self.verts = create_arc_verts(center, radius_outer, alpha_1, alpha_2, segments)
         self.verts += create_arc_verts(center, radius_inner, alpha_1, alpha_2, segments)
@@ -364,7 +365,7 @@ class RingArc(RingArcBase):
 
     def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
 
-        RingArcBase.__init__(self, center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
+        super().__init__(center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
 
 
 class StrokeRingArc(RingArcBase):
@@ -374,7 +375,7 @@ class StrokeRingArc(RingArcBase):
         radius_outer = radius + width/2
         radius_inner = radius - width/2
 
-        RingArcBase.__init__(self, center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
+        super().__init__(center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
 
 
 ### element group
@@ -406,6 +407,7 @@ class Group:
                             ('v2f', shape.verts),
                             ('c3B', shape.verts_colors))
 
+# (deprecated)
 #            shape.draw()
 #            pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
 #                            ('v2f', shape.verts),
