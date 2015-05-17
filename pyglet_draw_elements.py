@@ -34,7 +34,6 @@ import math
 class Pixel:
 
     def __init__(self, pos=(10, 10), color=(255, 255, 255)):
-
         self.x = pos[0]
         self.y = pos[1]
 
@@ -51,7 +50,6 @@ class Pixel:
 class Line:
 
     def __init__(self, start=(10, 10), end=(150, 150), color=(255, 255, 255)):
-
         self.start = start
         self.end = end
 
@@ -68,7 +66,6 @@ class Line:
 class MultiLine:
 
     def __init__(self, verts, color, closed=False):
-
         self.n_verts = len(verts) / 2
         self.verts = verts
 
@@ -86,7 +83,6 @@ class MultiLine:
 class LineRect:
 
     def __init__(self, center=(0,0), size=(200, 100), color=(0, 255, 0)):
-
         self.center = center
         self.size = size
         self.width = size[0]
@@ -104,7 +100,8 @@ class LineRect:
 
 class Circle:
 
-    def __init__(self, center=(0, 0), radius=100, color=(0, 0, 255), segments=20):
+    def __init__(self, center=(0, 0), radius=100, color=(0, 0, 255),
+                 segments=20):
         self.center = center
         self.radius = radius
 
@@ -123,8 +120,8 @@ class Circle:
 
 class Arc:
 
-    def __init__(self, center=(0, 0), radius=100, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
-
+    def __init__(self, center=(0, 0), radius=100, alpha_1=0, alpha_2=math.pi,
+                 color=(200, 0, 255), segments=10):
         self.center = center
         self.radius = radius
 
@@ -146,7 +143,6 @@ class Arc:
 class StrokeLine:
 
     def __init__(self, start=(0,0), end=(80, 60), width=8, color=(130,130,150)):
-
         self.start = start
         self.end = end
         self.width = width
@@ -166,7 +162,6 @@ class StrokeLine:
 class Rect:
 
     def __init__(self, center=(0,0), size=(200, 100), color=(255, 0, 0)):
-
         self.center = center
         self.size = size
         self.width = size[0]
@@ -187,7 +182,6 @@ class Rect:
 class Shape:
 
     def __init__(self, verts, verts_index, color=(255, 255, 255)):
-
         self.n_verts = len(verts) / 2
         self.verts = verts
         self.verts_index = verts_index
@@ -201,7 +195,8 @@ class Shape:
 
 class Disk:
 
-    def __init__(self, center=(0, 0), radius=100, color=(180, 180, 120), segments=20):
+    def __init__(self, center=(0, 0), radius=100, color=(180, 180, 120),
+                 segments=20):
         self.center = center
         self.radius = radius
 
@@ -227,8 +222,8 @@ class Disk:
 
 class DiskArc:
 
-    def __init__(self, center=(0, 0), radius=100, alpha_1=0.0, alpha_2=math.pi, color=(180, 120, 180), segments=8):
-
+    def __init__(self, center=(0, 0), radius=100, alpha_1=0.0, alpha_2=math.pi,
+                 color=(180, 120, 180), segments=8):
         self.center = center
         self.radius = radius
 
@@ -240,7 +235,8 @@ class DiskArc:
         self.n_verts = segments + 2
 
         self.verts = [ center[0], center[1] ]
-        self.verts.extend(create_arc_verts(center, radius, alpha_1, alpha_2, segments))
+        self.verts.extend(create_arc_verts(center, radius, alpha_1, alpha_2,
+                                           segments))
 
         self.verts_index = create_radial_index(segments)
 
@@ -254,8 +250,8 @@ class DiskArc:
 
 class RingBase:
 
-    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90, color=(80, 1180, 150), segments=50):
-
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90,
+                 color=(80, 1180, 150), segments=50):
         self.center = center
         self.r_out = radius_outer
         self.r_in = radius_inner
@@ -280,7 +276,6 @@ class RingBase:
         self.indexed = True    
 
     def create_index(self):
-
         segments = self.segments
         #r_out = self.r_out
         #r_in = self.r_in
@@ -304,15 +299,16 @@ class RingBase:
 
 class Ring(RingBase):
 
-    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90, color=(80, 180, 150), segments=50):
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=90,
+                 color=(80, 180, 150), segments=50):
 
-        # super() could be used here, e.g.: super().__init__(value)
         super().__init__(center, radius_outer, radius_inner, color, segments)
 
 
 class StrokeRing(RingBase):
 
-    def __init__(self, center=(0, 0), radius=120, width=5, color=(200, 180, 160), segments=30):
+    def __init__(self, center=(0, 0), radius=120, width=5,
+                 color=(200, 180, 160), segments=30):
 
         r_out = radius + width/2
         r_in = radius - width/2
@@ -322,7 +318,8 @@ class StrokeRing(RingBase):
 
 class RingArcBase:
 
-    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80,
+                 alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
 
         self.center = center
         self.radius_outer = radius_outer
@@ -337,8 +334,10 @@ class RingArcBase:
         # (debug-print)
         #print("n_verts: ", self.n_verts)
 
-        self.verts = create_arc_verts(center, radius_outer, alpha_1, alpha_2, segments)
-        self.verts += create_arc_verts(center, radius_inner, alpha_1, alpha_2, segments)
+        self.verts = create_arc_verts(center, radius_outer, alpha_1, alpha_2,
+                                      segments)
+        self.verts += create_arc_verts(center, radius_inner, alpha_1, alpha_2,
+                                       segments)
 
         self.create_index()
 
@@ -349,7 +348,6 @@ class RingArcBase:
         self.indexed = True
 
     def create_index(self):
-
         segments = self.segments
 
         verts_i = []
@@ -363,19 +361,23 @@ class RingArcBase:
 
 class RingArc(RingArcBase):
 
-    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+    def __init__(self, center=(0, 0), radius_outer=100, radius_inner=80,
+                 alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
 
-        super().__init__(center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
+        super().__init__(center, radius_outer, radius_inner, alpha_1, alpha_2, 
+                         color, segments)
 
 
 class StrokeRingArc(RingArcBase):
 
-    def __init__(self, center=(0, 0), radius=100, width=15, alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
+    def __init__(self, center=(0, 0), radius=100, width=15,
+                 alpha_1=0, alpha_2=math.pi, color=(200, 0, 255), segments=10):
 
         radius_outer = radius + width/2
         radius_inner = radius - width/2
 
-        super().__init__(center, radius_outer, radius_inner, alpha_1, alpha_2, color, segments)
+        super().__init__(center, radius_outer, radius_inner, alpha_1, alpha_2,
+                         color, segments)
 
 
 ### element group
@@ -383,14 +385,12 @@ class StrokeRingArc(RingArcBase):
 class Group:
 
     def __init__(self, position=(0, 0), angle=0):
-
         self.position = position
         self.angle = angle
 
         self.shapes = []
 
     def render(self):
-
         pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(self.position[0], self.position[1], 0)
         pyglet.gl.glRotatef(self.angle, 0, 0, 1)
@@ -418,7 +418,6 @@ class Group:
 ### helper functions
 
 def create_circle_verts(center, r, segments):
-
     segment_angle = 2 * math.pi / segments
 
     verts = []
@@ -433,7 +432,6 @@ def create_circle_verts(center, r, segments):
 
 
 def create_arc_verts(center, r, alpha_1, alpha_2, segments):
-
     segment_angle = (alpha_2-alpha_1) / segments
 
     verts = []
@@ -448,7 +446,6 @@ def create_arc_verts(center, r, alpha_1, alpha_2, segments):
 
 
 def create_radial_index(segments):
-
     verts_index = []
     # (leaves last segment open)
     for n in range(segments):
@@ -460,20 +457,18 @@ def create_radial_index(segments):
 
 
 def create_rect_verts(center, size):
+    c_x = center[0]
+    c_y = center[1]
+    width = size[0]
+    height = size[1]
 
-        c_x = center[0]
-        c_y = center[1]
-        width = size[0]
-        height = size[1]
-
-        return [ c_x-width/2, c_y-height/2,
-                c_x+width/2, c_y-height/2,
-                c_x+width/2, c_y+height/2,
-                c_x-width/2, c_y+height/2 ]
+    return [ c_x-width/2, c_y-height/2,
+             c_x+width/2, c_y-height/2,
+             c_x+width/2, c_y+height/2,
+             c_x-width/2, c_y+height/2 ]
 
 
 def create_tiltrect_verts(start, end, width):
-
     Sx = start[0]
     Sy = start[1]
 
