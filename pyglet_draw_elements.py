@@ -23,11 +23,40 @@
 # --> change rgb to rgba !
 # --> reorganize the elements ==> OK
 #
+# Resources:
+# - http://tartley.com/files/stretching_pyglets_wings/presentation/
+#
 # cem, 2015-05-10
 #
 
 import pyglet
 import math
+
+### camera
+# from - http://tartley.com/files/stretching_pyglets_wings/presentation/
+class Camera(object):
+
+    def __init__(self, position, scale=1, tilt_angle=0):
+        self.x, self.y = position       # (centered on)
+        self.tilt_angle = tilt_angle    # (in rad)
+        self.scale = scale              # zoom
+
+    def shoot(self, win_width, win_height):
+        # focus
+        pyglet.gl.glMatrixMode(pyglet.gl.GL_PROJECTION)
+        pyglet.gl.glLoadIdentity()
+        aspect = win_width / win_height
+        pyglet.gl.gluOrtho2D(-self.scale * aspect, # left
+                             +self.scale * aspect, # right
+                             -self.scale,          # bottom
+                             +self.scale)          # top
+
+        # Set modelview matrix to move, scale & rotate
+        pyglet.gl.glMatrixMode(pyglet.gl.GL_MODELVIEW)
+        pyglet.gl.glLoadIdentity()
+        pyglet.gl.gluLookAt(self.x, self.y, +1.0, # camera  x,y,z
+                            self.x, self.y, -1.0, # look at x,y,z
+                            math.sin(self.tilt_angle), math.cos(self.tilt_angle), 0.0)
 
 ### point elements
 
